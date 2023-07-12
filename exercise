@@ -1,0 +1,305 @@
+package yesu;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Scanner;
+
+class Transaction {
+	private int transactionId;
+	private int accountNumber;
+	private Date date;
+	private String transactionType;
+	private double amount;
+
+	public Transaction(int transactionId, int accountNumber, Date date, String transactionType, double amount) {
+		this.transactionId = transactionId;
+		this.accountNumber = accountNumber;
+		this.date = date;
+		this.transactionType = transactionType;
+		this.amount = amount;
+	}
+
+	public int getTransactionId() {
+		return transactionId;
+	}
+
+	public int getAccountNumber() {
+		return accountNumber;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public String getTransactionType() {
+		return transactionType;
+	}
+
+	public double getAmount() {
+		return amount;
+	}
+}
+
+class Account {
+	private int accountNumber;
+
+	private double currentBalance;
+	private Date creationDate;
+	private String accountType;
+	private ArrayList<Transaction> transactions;
+
+	public Account(int AcountNo, Double CurrentBalence, Date date, String accountType) {
+		this.accountNumber = AcountNo;
+
+		this.currentBalance = CurrentBalence;
+		this.creationDate = date;
+		this.accountType = accountType;
+		this.transactions = new ArrayList<>();
+	}
+
+	public void addTransaction(int transactionId, int acountNo, Date date, String transactionType, double amount) {
+		Transaction transaction = new Transaction(transactionId, acountNo, date, transactionType, amount);
+		transactions.add(transaction);
+	}
+
+	public int getAccountNumber() {
+		return accountNumber;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public double getCurrentBalance() {
+		return currentBalance;
+	}
+
+	public String getAccountType() {
+		return accountType;
+	}
+
+	public ArrayList<Transaction> getTransactions() {
+		return transactions;
+	}
+}
+
+class Calculate {
+	static double AllAcountInterest;
+
+	public void m() {
+		File accountFile = new File("C:\\Users\\yesu.k\\Documents\\java programs\\accountData.txt");
+		File transactionFile = new File("C:\\Users\\yesu.k\\Documents\\java programs\\transactionData.txt");
+
+		ArrayList<Account> accounts = new ArrayList<>();
+
+		try {
+			BufferedReader accountReader = new BufferedReader(new FileReader(accountFile));
+
+			String accountLine;
+			while ((accountLine = accountReader.readLine()) != null) {
+				String[] accountData = accountLine.split(",");
+				if (accountData.length == 4) {
+					int accountNumber = Integer.parseInt(accountData[0]);
+					double currentBalance = Double.parseDouble(accountData[1]);
+					Date creationDate = parseDate(accountData[2]);
+					String accountType = accountData[3];
+
+					Account account = new Account(accountNumber, currentBalance, creationDate, accountType);
+					accounts.add(account);
+				}
+			}
+
+			accountReader.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("Account data file not found.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			BufferedReader transactionReader = new BufferedReader(new FileReader(transactionFile));
+
+			String transactionLine;
+			while ((transactionLine = transactionReader.readLine()) != null) {
+				String[] transactionData = transactionLine.split(",");
+				if (transactionData.length == 5) {
+					int transactionId = Integer.parseInt(transactionData[0]);
+					int accountNumber = Integer.parseInt(transactionData[1]);
+					Date date = parseDate(transactionData[2]);
+					String transactionType = transactionData[3];
+					double amount = Double.parseDouble(transactionData[4]);
+
+					Account account = findAccount(accounts, accountNumber);
+					if (account != null) {
+						account.addTransaction(transactionId, accountNumber, date, transactionType, amount);
+					}
+				}
+			}
+
+			transactionReader.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("Transaction data file not found.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Print account and transaction details
+		for (Account account : accounts) {
+			double startingBalance = account.getCurrentBalance();
+			System.out.println("Account Number: " + account.getAccountNumber());
+			System.out.println("Current Balance: " + account.getCurrentBalance());
+			System.out.println("Creation Date: " + account.getCreationDate());
+			System.out.println("Account Type: " + account.getAccountType());
+
+			System.out.println("Transactions:");
+			ArrayList<Transaction> transactions = account.getTransactions();
+			for (Transaction transaction : transactions) {
+				System.out.println("Transaction ID: " + transaction.getTransactionId());
+				System.out.println("Date: " + transaction.getDate());
+				System.out.println("Transaction Type: " + transaction.getTransactionType());
+				System.out.println("Amount: " + transaction.getAmount());
+				System.out.println();
+				if (transaction.getTransactionType().equals("withdraw"))
+					startingBalance += transaction.getAmount();
+				else
+					startingBalance -= transaction.getAmount();
+			}
+
+			calculateMinimalBalance(startingBalance, transactions);
+		}
+		System.out.println(AllAcountInterest);
+	}
+
+	private void calculateMinimalBalance(double startingBalance, ArrayList<Transaction> transactions) {
+		double TotalInterest = 0, monthInterest = 0;
+		boolean check = false;
+		Scanner sc = new Scanner(System.in);
+		System.out.println("starting balence   " + startingBalance);
+		System.out.println("enter month value like jan=0.feb=1...");
+
+		int mont = sc.nextInt();
+		System.out.println("enter day  ");
+		int day = sc.nextInt();
+		System.out.println("enter year ");
+		int year = sc.nextInt();
+
+		for (int i = 5; i >= 1; i--) {
+			int m = i;
+
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(year, mont, day); // Customized date
+			Date currentDate = calendar.getTime();
+			System.out.println("present Date   " + currentDate);
+			calendar.add(Calendar.MONTH, -m);
+			calendar.set(Calendar.DAY_OF_MONTH, 10);
+			Date MonthsAgo = calendar.getTime();
+			calendar.set(Calendar.DAY_OF_MONTH, 1);
+			Date StartMonth = calendar.getTime();
+
+			int month = calendar.get(Calendar.MONTH);
+			if (month == 1)
+				calendar.set(Calendar.DAY_OF_MONTH, 28);
+			else if (month == 0 | month == 2 | month == 4 | month == 6 | month == 7 | month == 9 | month == 11)
+				calendar.set(Calendar.DAY_OF_MONTH, 31);
+			else {
+				calendar.set(Calendar.DAY_OF_MONTH, 30);
+			}
+
+			Date ForMonth = calendar.getTime();
+
+			System.out.println("Current Month " + i + ForMonth);
+
+			double minimalBalance = startingBalance;
+
+			for (Transaction transaction : transactions) {
+				Date transactionDate = transaction.getDate();
+				Calendar cal = Calendar.getInstance();
+
+				cal.setTime(transactionDate);
+				System.out.println("Current transaction Date   " + transactionDate);
+
+				if (transactionDate.compareTo(MonthsAgo) >= 0 && transactionDate.compareTo(currentDate) <= 0
+						&& ForMonth.compareTo(transactionDate) >= 0) {
+					check = true;
+					if (transaction.getTransactionType().equals("withdraw")) {
+
+						startingBalance = Math.abs(startingBalance - transaction.getAmount());
+					} else {
+						startingBalance = Math.abs(startingBalance + transaction.getAmount());
+					}
+
+					minimalBalance = Math.min(minimalBalance, startingBalance);
+
+				} else if (transactionDate.compareTo(MonthsAgo) <= 0 && transactionDate.compareTo(currentDate) <= 0
+						&& StartMonth.compareTo(transactionDate) <= 0) {
+					if (transaction.getTransactionType().equals("withdraw")) {
+
+						startingBalance = Math.abs(startingBalance - transaction.getAmount());
+					} else {
+						startingBalance = Math.abs(startingBalance + transaction.getAmount());
+					}
+
+				}
+
+			}
+
+			if (check) {
+
+				System.out.println("if Transaction occurced or not minimal balence   on current Month  from : "
+						+ MonthsAgo + "  To  " + ForMonth + "  is  " + minimalBalance);
+			}
+
+			else {
+				minimalBalance = 0;
+				System.out.println("No transaction occured   on this period from : " + MonthsAgo + "  To  " + ForMonth);
+			}
+			monthInterest = calculateInterest(minimalBalance, 4.5);
+			System.out.println("monthly Interest " + monthInterest);
+			TotalInterest += monthInterest;
+		}
+		System.out.println("Total Months Interest " + TotalInterest);
+		AllAcountInterest += TotalInterest;
+	}
+
+	double calculateInterest(double minimalBalance, double b) {
+		return (minimalBalance * 4.5) / 100;
+
+	}
+
+	private Date parseDate(String dateString) {
+		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+
+		try {
+			return format.parse(dateString);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private Account findAccount(ArrayList<Account> accounts, int accountNumber) {
+		for (Account account : accounts) {
+			if (account.getAccountNumber() == accountNumber) {
+				return account;
+			}
+		}
+		return null;
+	}
+}
+
+class ex3 {
+	public static void main(String args[]) {
+		Calculate obj = new Calculate();
+		obj.m();
+
+	}
+
+}
