@@ -154,9 +154,10 @@ class Calculate {
 		// Print account and transaction details
 		for (Account account : accounts) {
 			double startingBalance = account.getCurrentBalance();
+			Date date = account.getCreationDate();
 			System.out.println("Account Number: " + account.getAccountNumber());
 			System.out.println("Current Balance: " + account.getCurrentBalance());
-			System.out.println("Creation Date: " + account.getCreationDate());
+			System.out.println("Creation Date: " + date);
 			System.out.println("Account Type: " + account.getAccountType());
 
 			System.out.println("Transactions:");
@@ -173,12 +174,12 @@ class Calculate {
 					startingBalance -= transaction.getAmount();
 			}
 
-			calculateMinimalBalance(startingBalance, transactions);
+			calculateMinimalBalance(startingBalance, transactions, date);
 		}
-		System.out.println(AllAcountInterest);
+		System.out.println("All Accounts Interest is " + AllAcountInterest);
 	}
 
-	private void calculateMinimalBalance(double startingBalance, ArrayList<Transaction> transactions) {
+	private void calculateMinimalBalance(double startingBalance, ArrayList<Transaction> transactions, Date date) {
 		double TotalInterest = 0, monthInterest = 0;
 		boolean check = false;
 		Scanner sc = new Scanner(System.in);
@@ -190,8 +191,14 @@ class Calculate {
 		int day = sc.nextInt();
 		System.out.println("enter year ");
 		int year = sc.nextInt();
+		Calendar ca = Calendar.getInstance();
 
-		for (int i = 5; i >= 1; i--) {
+		ca.setTime(date);
+		Date AcountDate = ca.getTime();
+		System.out.println("ggggggg    " + AcountDate);
+
+		// e = calendar.getTime();
+		for (int i = 6; i >= 1; i--) {
 			int m = i;
 
 			Calendar calendar = Calendar.getInstance();
@@ -215,18 +222,21 @@ class Calculate {
 
 			Date ForMonth = calendar.getTime();
 
-			System.out.println("Current Month " + i + ForMonth);
-
 			double minimalBalance = startingBalance;
 
 			for (Transaction transaction : transactions) {
+
 				Date transactionDate = transaction.getDate();
 				Calendar cal = Calendar.getInstance();
-
 				cal.setTime(transactionDate);
-				System.out.println("Current transaction Date   " + transactionDate);
+				Date d = cal.getTime();
 
-				if (transactionDate.compareTo(MonthsAgo) >= 0 && transactionDate.compareTo(currentDate) <= 0
+				if (AcountDate.compareTo(d) <= 0 | AcountDate.compareTo(StartMonth) <= 0) {
+					System.out.println("Acount Does Not Exist");
+					continue;
+				}
+
+				else if (transactionDate.compareTo(MonthsAgo) >= 0 && transactionDate.compareTo(currentDate) <= 0
 						&& ForMonth.compareTo(transactionDate) >= 0) {
 					check = true;
 					if (transaction.getTransactionType().equals("withdraw")) {
@@ -239,16 +249,16 @@ class Calculate {
 					minimalBalance = Math.min(minimalBalance, startingBalance);
 
 				} else if (transactionDate.compareTo(MonthsAgo) <= 0 && transactionDate.compareTo(currentDate) <= 0
-						&& StartMonth.compareTo(transactionDate) <= 0) {
+						&& transactionDate.compareTo(StartMonth) >= 0) {
 					if (transaction.getTransactionType().equals("withdraw")) {
 
 						startingBalance = Math.abs(startingBalance - transaction.getAmount());
 					} else {
 						startingBalance = Math.abs(startingBalance + transaction.getAmount());
 					}
+					minimalBalance = Math.min(minimalBalance, startingBalance);
 
 				}
-
 			}
 
 			if (check) {
@@ -258,19 +268,22 @@ class Calculate {
 			}
 
 			else {
+
+				System.out.println("Not calculated interest   on this period from : " + MonthsAgo + "  To  " + ForMonth
+						+ "minimum balence is  " + minimalBalance);
 				minimalBalance = 0;
-				System.out.println("No transaction occured   on this period from : " + MonthsAgo + "  To  " + ForMonth);
 			}
 			monthInterest = calculateInterest(minimalBalance, 4.5);
 			System.out.println("monthly Interest " + monthInterest);
 			TotalInterest += monthInterest;
 		}
 		System.out.println("Total Months Interest " + TotalInterest);
+		System.out.println();
 		AllAcountInterest += TotalInterest;
 	}
 
 	double calculateInterest(double minimalBalance, double b) {
-		return (minimalBalance * 4.5) / 100;
+		return (minimalBalance * 4.5) / (12 * 100);
 
 	}
 
