@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Train Schedule</title>
+</head>
+<body>
+  <h1>Train Schedule</h1>
+  
+  <div>
+    <label for="sourceStation">Source Station:</label>
+    <select id="sourceStation">
+      <!-- Your source station options here -->
+      <option value="CSMT">Mumbai CSMT</option>
+      <option value="MMCT">Mumbai Central</option>
+      <!-- Add more options as needed -->
+    </select>
+  </div>
+  
+  <div>
+    <label for="destinationStation">Destination Station:</label>
+    <select id="destinationStation">
+      <!-- Your destination station options here -->
+      <option value="NZM">Hazrat Nizamuddin</option>
+      <option value="NDLS">New Delhi</option>
+      <!-- Add more options as needed -->
+    </select>
+  </div>
+  
+  <button id="searchTrainsButton">Search Trains</button>
+  
+  <table id="trainTable">
+    <thead>
+      <tr>
+        <th>Train Number</th>
+        <th>Train Name</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Departure</th>
+        <th>Arrival</th>
+        <th>Duration</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Table rows will be populated here -->
+    </tbody>
+  </table>
+
+  <script>
+    const trainTable = document.getElementById('trainTable');
+    const tbody = trainTable.querySelector('tbody');
+    const sourceStationSelect = document.getElementById('sourceStation');
+    const destinationStationSelect = document.getElementById('destinationStation');
+    const searchTrainsButton = document.getElementById('searchTrainsButton');
+
+    const options = {
+      method: 'GET',
+      url: 'https://irctc1.p.rapidapi.com/api/v3/trainBetweenStations',
+      params: {
+        fromStationCode: '',
+        toStationCode: '',
+        dateOfJourney: '2023-08-09'
+      },
+      headers: {
+        'X-RapidAPI-Key': 'fac5ced3d7mshe7795f8b90adb71p1ffc81jsnddc755524d80',
+        'X-RapidAPI-Host': 'irctc1.p.rapidapi.com'
+      }
+    };
+
+    async function fetchTrainData(sourceStationCode, destinationStationCode) {
+      options.params.fromStationCode = sourceStationCode;
+      options.params.toStationCode = destinationStationCode;
+
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', options.url + '?' + new URLSearchParams(options.params), true);
+        xhr.setRequestHeader('X-RapidAPI-Key', options.headers['X-RapidAPI-Key']);
+        xhr.setRequestHeader('X-RapidAPI-Host', options.headers['X-RapidAPI-Host']);
+
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            resolve(JSON.parse(xhr.responseText).data);
+          } else {
+            reject(new Error('Request failed with status ' + xhr.status));
+          }
+        };
+
+        xhr.onerror = function () {
+          reject(new Error('Network error'));
+        };
+
+        xhr.send();
+      });
+    }
+
+    async function populateTable(sourceStationCode, destinationStationCode) {
+      const trainData = await fetchTrainData(sourceStationCode, destinationStationCode);
+      if (!trainData) {
+        console.error('Failed to fetch train data.');
+        return;
+      }
+
+      tbody.innerHTML = '';
+
+      trainData.forEach(train => {
+        const row = document.createElement('tr');
+        const cellTrainNumber = document.createElement('td');
+        const cellTrainName = document.createElement('td');
+        const cellFrom = document.createElement('td');
+        const cellTo = document.createElement('td');
+        const cellDeparture = document.createElement('td');
+        const cellArrival = document.createElement('td');
+        const cellDuration = document.createElement('td');
+
+        cellTrainNumber.textContent = train.train_number;
+        cellTrainName.textContent = train.train_name;
+        cellFrom.textContent = train.train_src;
+        cellTo.textContent = train.train_dstn;
+        cellDeparture.textContent = train.from_std;
+        cellArrival.textContent = train.to_std;
+        cellDuration.textContent = train.duration;
+
+        row.appendChild(cellTrainNumber);
+        row.appendChild(cellTrainName);
+        row.appendChild(cellFrom);
+        row.appendChild(cellTo);
+        row.appendChild(cellDeparture);
+        row.appendChild(cellArrival);
+        row.appendChild(cellDuration);
+
+        tbody.appendChild(row);
+      });
+    }
+
+    searchTrainsButton.addEventListener('click', () => {
+      const sourceStation = sourceStationSelect.value;
+      const destinationStation = destinationStationSelect.value;
+      populateTable(sourceStation, destinationStation);
+    });
+
+    // Fetch and display data when the page loads
+    populateTable(sourceStationSelect.value, destinationStationSelect.value);
+  </script>
+</body>
+</html>
