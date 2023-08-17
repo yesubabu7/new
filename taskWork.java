@@ -1,4 +1,4 @@
-package main;
+package demo;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/EmployeeServlet")
+@WebServlet("/JdbcServlet")
 public class JdbcServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -24,7 +24,8 @@ public class JdbcServlet extends HttpServlet {
 		String password = "pff123";
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
-
+		String action = request.getParameter("action");
+		System.out.println(action);
 		try {
 			Class.forName("org.postgresql.Driver");
 			Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
@@ -34,7 +35,7 @@ public class JdbcServlet extends HttpServlet {
 
 			Integer currentPointer = (Integer) session.getAttribute("currentPointer");
 
-			String action = request.getParameter("action");
+			// String action = request.getParameter("action");
 
 			if (resultSet == null) {
 				resultSet = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY)
@@ -155,47 +156,3 @@ public class JdbcServlet extends HttpServlet {
 		doGet(request, response);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import com.google.gson.JsonObject; // Import the Gson library for JSON handling
-
-@WebServlet("/EmployeeServlet")
-public class JdbcServlet extends HttpServlet {
-    // ... other code ...
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        // ... existing code ...
-
-        if ("first".equals(action) || "previous".equals(action) || "next".equals(action) || "last".equals(action)) {
-            JsonObject jsonObject = new JsonObject();
-            if (resultSet.absolute(currentPointer + 1)) {
-                int empId = resultSet.getInt("emp_no");
-                String empName = resultSet.getString("ename");
-                jsonObject.addProperty("empId", empId);
-                jsonObject.addProperty("empName", empName);
-            }
-            response.setContentType("application/json");
-            response.getWriter().write(jsonObject.toString());
-            return;
-        }
-
-        // ... remaining code ...
-    }
-
-    // ... other methods ...
-}
-
