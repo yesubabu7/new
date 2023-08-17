@@ -2,61 +2,27 @@
 <html>
 <head>
     <title>Employee Details</title>
-</head>
-<body>
-    <h1>Employee Details</h1>
-    <form action="EmployeeServlet" method="get">
-        <input type="hidden" name="action" value="first">
-        <input type="submit" value="First">
-        <input type="submit" name="action" value="previous">
-        <input type="submit" name="action" value="next">
-        <input type="submit" name="action" value="last">
-        <input type="submit" name="action" value="edit">
-        <input type="submit" name="action" value="delete">
-    </form>
-
-    <!-- Edit Form -->
-    <form action="EmployeeServlet" method="post">
-        <input type="hidden" name="action" value="save">
-        Name: <input type="text" name="editedName"><br>
-        Employee ID: <input type="text" name="editedEmpId"><br>
-        <input type="submit" value="Save">
-    </form>
-
-    <!-- Display Employee Details -->
-    <h2>Employee Details:</h2>
-    <!-- Use placeholders for dynamic content -->
-    <p><strong>ID:</strong> <span id="empId"></span></p>
-    <p><strong>Name:</strong> <span id="empName"></span></p>
-
-    <script>
-        // JavaScript code to update employee details dynamically
-        // Replace the placeholders with actual element IDs
-        const empIdElement = document.getElementById("empId");
-        const empNameElement = document.getElementById("empName");
-
-        // JavaScript code to update employee details dynamically
-        function updateEmployeeDetails(empId,empName) {
-        			empIdElement.textContent=empId;
-                        empNameElement.textContent = empName;
-        }
-    </script>
-</body>
-</html>
-
-
-
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Employee Details</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <h1>Employee Details</h1>
     
-    <!-- Rest of the HTML form -->
+    <!-- Navigation Form -->
+    <form id="navForm" method="get">
+        <input type="hidden" name="action" value="first">
+        <button type="button" id="firstButton">First</button>
+        <button type="button" id="prevButton">Previous</button>
+        <button type="button" id="nextButton">Next</button>
+        <button type="button" id="lastButton">Last</button>
+    </form>
+
+    <!-- Edit Form -->
+    <form id="editForm" method="post">
+        <input type="hidden" name="action" value="save">
+        Name: <input type="text" name="editedName" id="editedName"><br>
+        Employee ID: <input type="text" name="editedEmpId" id="editedEmpId"><br>
+        <button type="submit">Save</button>
+    </form>
 
     <!-- Display Employee Details -->
     <h2>Employee Details:</h2>
@@ -66,25 +32,49 @@
     <script>
         const empIdElement = $("#empId");
         const empNameElement = $("#empName");
+        const editedNameInput = $("#editedName");
+        const editedEmpIdInput = $("#editedEmpId");
 
-        // Function to update employee details dynamically
         function updateEmployeeDetails(empId, empName) {
             empIdElement.text(empId);
             empNameElement.text(empName);
         }
 
-        // Function to fetch employee details using jQuery AJAX
         function fetchEmployeeDetails(action) {
-            $.get("EmployeeServlet", { action: action }, function(data) {
+            $.get("JdbcServlet?action=" + action, function(data) {
                 updateEmployeeDetails(data.empId, data.empName);
             }).fail(function(xhr, status, error) {
                 console.error(error);
             });
         }
 
-        // Call the fetchEmployeeDetails function when page loads
+
         $(document).ready(function() {
             fetchEmployeeDetails("first");
+
+            $("#firstButton").click(function() {
+                fetchEmployeeDetails("first");
+            });
+
+            $("#prevButton").click(function() {
+                fetchEmployeeDetails("previous");
+            });
+
+            $("#nextButton").click(function() {
+                fetchEmployeeDetails("next");
+            });
+
+            $("#lastButton").click(function() {
+                fetchEmployeeDetails("last");
+            });
+
+            $("#editForm").submit(function(event) {
+                event.preventDefault();
+                const editedName = editedNameInput.val();
+                const editedEmpId = editedEmpIdInput.val();
+                // Call a function to handle the AJAX request to save edited data
+                // This is where you would send data to your EmployeeServlet
+            });
         });
     </script>
 </body>
