@@ -41,13 +41,17 @@
         }
 
         function fetchEmployeeDetails(action) {
-            $.get("JdbcServlet?action=" + action, function(data) {
-                updateEmployeeDetails(data.empId, data.empName);
+            $.get("/Servlet/JdbcServlet?action=" + action, function(data) {
+                if ("error" in data) {
+                    console.error(data.error);
+                } else {
+                	
+                    updateEmployeeDetails(data.empId, data.empName);
+                }
             }).fail(function(xhr, status, error) {
                 console.error(error);
             });
         }
-
 
         $(document).ready(function() {
             fetchEmployeeDetails("first");
