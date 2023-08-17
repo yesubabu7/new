@@ -155,3 +155,47 @@ public class JdbcServlet extends HttpServlet {
 		doGet(request, response);
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import com.google.gson.JsonObject; // Import the Gson library for JSON handling
+
+@WebServlet("/EmployeeServlet")
+public class JdbcServlet extends HttpServlet {
+    // ... other code ...
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // ... existing code ...
+
+        if ("first".equals(action) || "previous".equals(action) || "next".equals(action) || "last".equals(action)) {
+            JsonObject jsonObject = new JsonObject();
+            if (resultSet.absolute(currentPointer + 1)) {
+                int empId = resultSet.getInt("emp_no");
+                String empName = resultSet.getString("ename");
+                jsonObject.addProperty("empId", empId);
+                jsonObject.addProperty("empName", empName);
+            }
+            response.setContentType("application/json");
+            response.getWriter().write(jsonObject.toString());
+            return;
+        }
+
+        // ... remaining code ...
+    }
+
+    // ... other methods ...
+}
+
