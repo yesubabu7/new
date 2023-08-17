@@ -32,14 +32,14 @@
     <script>
         // JavaScript code to update employee details dynamically
         // Replace the placeholders with actual element IDs
-        //const empIdElement = document.getElementById("empId");
+        const empIdElement = document.getElementById("empId");
         const empNameElement = document.getElementById("empName");
 
         // JavaScript code to update employee details dynamically
-        function updateEmployeeDetails(empName) {
+        function updateEmployeeDetails(empId,empName) {
+        			empIdElement.textContent=empId;
                         empNameElement.textContent = empName;
         }
     </script>
 </body>
 </html>
-
