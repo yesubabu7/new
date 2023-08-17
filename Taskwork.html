@@ -43,3 +43,49 @@
     </script>
 </body>
 </html>
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Details</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Employee Details</h1>
+    
+    <!-- Rest of the HTML form -->
+
+    <!-- Display Employee Details -->
+    <h2>Employee Details:</h2>
+    <p><strong>ID:</strong> <span id="empId"></span></p>
+    <p><strong>Name:</strong> <span id="empName"></span></p>
+
+    <script>
+        const empIdElement = $("#empId");
+        const empNameElement = $("#empName");
+
+        // Function to update employee details dynamically
+        function updateEmployeeDetails(empId, empName) {
+            empIdElement.text(empId);
+            empNameElement.text(empName);
+        }
+
+        // Function to fetch employee details using jQuery AJAX
+        function fetchEmployeeDetails(action) {
+            $.get("EmployeeServlet", { action: action }, function(data) {
+                updateEmployeeDetails(data.empId, data.empName);
+            }).fail(function(xhr, status, error) {
+                console.error(error);
+            });
+        }
+
+        // Call the fetchEmployeeDetails function when page loads
+        $(document).ready(function() {
+            fetchEmployeeDetails("first");
+        });
+    </script>
+</body>
+</html>
