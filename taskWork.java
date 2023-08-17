@@ -63,7 +63,7 @@ public class JdbcServlet extends HttpServlet {
 			} else if ("edit".equals(action)) {
 				resultSet.absolute(currentPointer + 1);
 				String editedName = resultSet.getString("ename");
-				int editedEmpId = resultSet.getInt("empid");
+				int editedEmpId = resultSet.getInt("emp_no");
 				session.setAttribute("editedName", editedName);
 				session.setAttribute("editedEmpId", editedEmpId);
 			}
@@ -84,8 +84,8 @@ public class JdbcServlet extends HttpServlet {
 				}
 
 				resultSet.absolute(currentPointer + 1);
-				int empId = resultSet.getInt("empid");
-				String updateQuery = "UPDATE emp SET ename = ?, empid = ? WHERE empid = ?";
+				int empId = resultSet.getInt("emp_no");
+				String updateQuery = "UPDATE emp SET ename = ?, emp_no = ? WHERE emp_no = ?";
 				PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
 				preparedStatement.setString(1, editedName);
 				preparedStatement.setInt(2, editedEmpId);
@@ -97,8 +97,8 @@ public class JdbcServlet extends HttpServlet {
 
 			else if ("delete".equals(action)) {
 				resultSet.absolute(currentPointer + 1);
-				int empId = resultSet.getInt("empid");
-				String deleteQuery = "DELETE FROM emp WHERE empid = ?";
+				int empId = resultSet.getInt("emp_no");
+				String deleteQuery = "DELETE FROM emp WHERE emp_no = ?";
 				PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery);
 				preparedStatement.setInt(1, empId);
 				preparedStatement.executeUpdate();
@@ -111,9 +111,9 @@ public class JdbcServlet extends HttpServlet {
 			out.println("<html><body>");
 			if (resultSet.absolute(currentPointer + 1)) {
 				String name = resultSet.getString("ename");
-				// int empId = resultSet.getInt("empid");
+				int empId = resultSet.getInt("emp_no");
 				out.println("<h1>Employee Details:</h1>");
-				// out.println("<p><strong>ID:</strong> " + empId + "</p>");
+				out.println("<p><strong>ID:</strong> " + empId + "</p>");
 				out.println("<p><strong>Name:</strong> " + name + "</p>");
 			} else {
 				out.println("<h1>No more employee records.</h1>");
@@ -134,7 +134,7 @@ public class JdbcServlet extends HttpServlet {
 				int editedEmpId = (int) session.getAttribute("editedEmpId");
 				out.println("<form action=\"EmployeeServlet\" method=\"post\">");
 				out.println("<input type=\"hidden\" name=\"action\" value=\"save\">");
-				// out.println("<input type=\"hidden\" name=\"editedEmpId\" value=\"" + editedEmpId + "\">");
+				out.println("<input type=\"hidden\" name=\"editedEmpId\" value=\"" + editedEmpId + "\">");
 				out.println("Name: <input type=\"text\" name=\"editedName\" value=\"" + editedName + "\"><br>");
 				out.println("Employee ID: " + editedEmpId + "<br>");
 				out.println("<input type=\"submit\" value=\"Save\">");
@@ -155,4 +155,3 @@ public class JdbcServlet extends HttpServlet {
 		doGet(request, response);
 	}
 }
-
