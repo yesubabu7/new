@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Details</title>
+</head>
+<body>
+    <h1>Employee Details</h1>
+    <form action="EmployeeServlet" method="get">
+        <input type="hidden" name="action" value="first">
+        <input type="submit" value="First">
+        <input type="submit" name="action" value="previous">
+        <input type="submit" name="action" value="next">
+        <input type="submit" name="action" value="last">
+        <input type="submit" name="action" value="edit">
+        <input type="submit" name="action" value="delete">
+    </form>
+
+    <!-- Edit Form -->
+    <form action="EmployeeServlet" method="post">
+        <input type="hidden" name="action" value="save">
+        Name: <input type="text" name="editedName"><br>
+        Employee ID: <input type="text" name="editedEmpId"><br>
+        <input type="submit" value="Save">
+    </form>
+
+    <!-- Display Employee Details -->
+    <h2>Employee Details:</h2>
+    <!-- Use placeholders for dynamic content -->
+    <p><strong>ID:</strong> <span id="empId"></span></p>
+    <p><strong>Name:</strong> <span id="empName"></span></p>
+
+    <script>
+        // JavaScript code to update employee details dynamically
+        // Replace the placeholders with actual element IDs
+        //const empIdElement = document.getElementById("empId");
+        const empNameElement = document.getElementById("empName");
+
+        // JavaScript code to update employee details dynamically
+        function updateEmployeeDetails(empName) {
+                        empNameElement.textContent = empName;
+        }
+    </script>
+</body>
+</html>
+
