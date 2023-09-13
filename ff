@@ -1,0 +1,23 @@
+// checking for userlogin and retriving corresponding customer data of based on login userId
+	@RequestMapping(value = "/userLogin", method = RequestMethod.POST)
+	public String userCheck(@RequestParam("username") String username, @RequestParam("password") String password,
+			Model model) {
+		List<Customer> customerIds = customerservice.getAllCustomerUsersService(username, password);
+		model.addAttribute("CustomerLists", customerIds);
+		return "redirect:/specificUserData";
+
+	}
+
+	@RequestMapping(value = "/specificUserData", method = RequestMethod.POST)
+	public String specificUserData(@RequestParam("key") String key, @RequestParam("username") String username,
+			@RequestParam("password") String password, Model model) {
+		
+		
+		loan = customerservice.getLoanApplicantData();
+		model.addAttribute("loanApplicants", loan);
+		
+		
+		
+		return "SpecificUserData";
+
+	}
