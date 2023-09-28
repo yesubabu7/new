@@ -26,6 +26,8 @@ import com.example.insurence.models.Claim;
 import com.example.insurence.models.ClaimApplication;
 import com.example.insurence.models.CustomerData;
 import com.example.insurence.models.PolicyMembers;
+import com.example.insurence.models.ReUpload;
+import com.example.insurence.models.Uploads;
 import com.example.insurence.models.UserData;
 import com.example.insurence.models.UserLoginValidation;
 
@@ -237,6 +239,21 @@ public class InsurenceRepository implements RepositoryInterface {
 	public int getCustIdByUserId(int userId) {
 		return insurenceDao.getCustIdByUserId(userId);
 		
+	}
+
+	public List<ReUpload> getAllReUploads(int id) {
+		
+		return insurenceDao.getAllReUploads(id);
+	}
+
+	
+
+	public List<Uploads> getAllUploads(int claimId) {
+		return insurenceDao.getAllUploads(claimId);
+	}
+
+	public void addUploads(Uploads up) {
+		insurenceDao.addUploads(up);		
 	}
 
 }

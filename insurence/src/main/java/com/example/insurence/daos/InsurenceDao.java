@@ -16,6 +16,8 @@ import com.example.insurence.models.Claim;
 import com.example.insurence.models.ClaimApplication;
 import com.example.insurence.models.CustomerData;
 import com.example.insurence.models.PolicyMembers;
+import com.example.insurence.models.ReUpload;
+import com.example.insurence.models.Uploads;
 import com.example.insurence.models.UserData;
 import com.example.insurence.models.UserLoginValidation;
 import com.example.insurence.rowmappers.ClaimMapper;
@@ -23,6 +25,8 @@ import com.example.insurence.rowmappers.CustomerDataRowMapper;
 import com.example.insurence.rowmappers.PolicyMembersRowMapper;
 import com.example.insurence.rowmappers.UserLoginValidationRowMapper;
 import com.example.insurence.rowmappers.UsersDataRowMapper;
+import com.example.insurence.rowmappers.*;
+
 
 import jakarta.servlet.http.HttpSession;
 
@@ -180,5 +184,36 @@ public class InsurenceDao implements DaoInterface {
    
 		
 	}
+	
+	
+	
+		public void addRequiredUploads(ReUpload upload) {
+			String query = "insert into reuploads(claimId,name,type,Status,description) values(?,?,?,?,?)";
+			Object[] values = { upload.getClaimId(), upload.getName(), upload.getType(), upload.getStatus(),
+					upload.getDescription() };
+			jdbcTemplate.update(query, values);
+		}
+
+		
+		public List<ReUpload> getAllReUploads(int id) {
+
+			return jdbcTemplate.query("select * from reuploads where claimId="+id, new ReUploadRowMapper());
+		}
+
+		
+		public void addUploads(Uploads up) {
+
+			System.out.println("jdbc");
+			String query = "insert into uploads(uploadId,reuploadId,claimId,data,type) values(?,?,?,?)";
+			Object[] values = { up.getUploadId(), up.getReUploadId(), up.getClaimId(), up.getData(), up.getType() };
+			jdbcTemplate.update(query, values);
+		}
+
+		
+		public List<Uploads> getAllUploads(int claimId) {
+			
+			return jdbcTemplate.query("select * from uploads where claimId="+claimId, new UploadsRowMapper());
+		}
+
 
 }

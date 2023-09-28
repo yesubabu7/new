@@ -22,10 +22,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.example.insurence.models.Claim;
 import com.example.insurence.models.ClaimApplication;
 import com.example.insurence.models.CustomerData;
+import com.example.insurence.models.ReUpload;
+import com.example.insurence.models.Uploads;
 import com.example.insurence.models.UserData;
 import com.example.insurence.repositories.InsurenceRepository;
 
@@ -271,5 +274,84 @@ public class InsurenceController {
 		model.addAttribute("claims", li);
 		return "Claims";
 	}
+	
+	
+	
+	@GetMapping(value = "/getrequired")
+	public String getRequiredUploads(@RequestParam("claimid") int id, Model model) {
+
+		model.addAttribute("reupload", insurenceRepository.getAllReUploads(id));
+		model.addAttribute("claimid", id);
+		return "update";
+		
+	}
+	
+	//   getrequired(above router) calls the adduploads router(below One)
+
+	@PostMapping(value = "/adduploads")
+	public String addUploads(@RequestParam("claimid") String id, MultipartHttpServletRequest request,Model model) {
+
+		int claimId = Integer.parseInt(id);
+		int index = 1;
+
+		List<ReUpload> list = insurenceRepository.getAllReUploads(claimId);
+		List<Uploads> list2 = insurenceRepository.getAllUploads(claimId);
+		
+		if(list2.size()>0) {
+		
+			index=list2.get(list2.size()).getReUploadId();
+		}
+		for (ReUpload upload : list) {
+			if (upload.getClaimId() == claimId) {
+				String name = upload.getName();
+				System.out.println(claimId);
+				MultipartFile file = request.getFile(name);
+				if (file != null && !file.isEmpty()) {
+					System.out.println(name);
+					if (upload.getType().equals("file")) {
+						System.out.println("file");
+
+						String uploadDir = "src/main/resources/static/file";
+						try {
+							Files.createDirectories(Paths.get(uploadDir));
+
+							String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+							Path targetLocation = Paths.get(uploadDir).resolve(fileName);
+							Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+							String fullPath = targetLocation.toAbsolutePath().toString();
+
+							Uploads up = new Uploads();
+							up.setUploadId(index);
+							up.setReUploadId(upload.getUploadId());
+							up.setClaimId(claimId);
+							up.setData(fullPath);
+							up.setType("file");
+
+							insurenceRepository.addUploads(up);
+
+						} catch (IOException ex) {
+							ex.printStackTrace();
+						}
+					} else {
+
+						Uploads up = new Uploads();
+
+						up.setUploadId(index);
+						up.setReUploadId(upload.getUploadId());
+						up.setClaimId(claimId);
+						up.setData(file.getOriginalFilename());
+						up.setType("text");
+
+						insurenceRepository.addUploads(up);
+					}
+				}
+			}
+		}
+
+		model.addAttribute("claimid", claimId);
+		return "update";
+		// call again 
+	}
+
 
 }
