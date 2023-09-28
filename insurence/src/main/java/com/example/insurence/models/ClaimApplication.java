@@ -1,5 +1,6 @@
 package com.example.insurence.models;
 
+
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 
@@ -18,20 +19,6 @@ public class ClaimApplication {
 	private String diagnosis;
 	private String treatment;
 	private double claimAmountRequested;
-
-	private String hosp_name;
-
-	public String getHosp_name() {
-		return hosp_name;
-	}
-
-	public void setMemberIndex(int memberIndex) {
-		this.memberIndex = memberIndex;
-	}
-
-	public void setHosp_name(String hosp_name) {
-		this.hosp_name = hosp_name;
-	}
 
 	public int getClamIplcId() {
 		return clamIplcId;
@@ -177,11 +164,4 @@ public class ClaimApplication {
 		this.claimAmountRequested = roomCharges;
 	}
 
-	public String toString() {
-		return "ClaimApplication{" + "clamIplcId=" + clamIplcId + ", memberIndex=" + memberIndex + ", relation='"
-				+ relation + '\'' + ", joinedDate=" + joinedDate + ", patientName='" + patientName + '\''
-				+ ", dateOfBirth=" + dateOfBirth + ", gender='" + gender + '\'' + ", contactNumber='" + contactNumber
-				+ '\'' + ", address='" + address + '\'' + ", disease='" + disease + '\'' + ", diagnosis='" + diagnosis
-				+ '\'' + ", treatment='" + treatment + '\'' + ", claimAmountRequested=" + claimAmountRequested + '}';
-	}
 }

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Claim Form</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Your CSS styles here */
+    </style>
+</head>
+<body>
+<header>
+    <img src="https://cdn.imgbin.com/22/2/6/imgbin-cigna-logo-insurance-company-health-care-az-breaking-news-alerts-wLCdsy2cvEp6htJxr1Pna0qXL.jpg" alt="Company Logo" id="companyLogo">
+    <div id="companyName">FUTURE SAFE</div>
+</header>
+
+<main>
+    <form action="/claimbills" id="claimForm" method="post" enctype="multipart/form-data">
+        <section id="personalInfo" class="form-section">
+            <h2>Patient Information</h2>
+            <label for="patientName">Patient Name:</label>
+            <input type="text" id="patientName" name="patientName" required>
+
+            <label for="policyIdId">Policy Id:</label>
+            <input type="text" id="policyIdId" name="clamIplcId" required>
+
+            <label for="memberIndex">Member Index:</label>
+            <input type="text" id="memberIndex" name="memberIndex" required>
+
+            <label for="relation">Relation:</label>
+            <input type="text" id="relation" name="relation" required>
+
+            <label for="joinedDate">Joined Date:</label>
+            <input type="date" id="joinedDate" name="joinedDate" required>
+
+            <label for="dateOfBirth">Date of Birth:</label>
+            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+            
+            
+            
+
+            <label for="contactNumber">Contact Number:</label>
+            <input type="tel" id="contactNumber" name="contactNumber" required>
+
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" required>
+
+            <label for="disease">Disease:</label>
+            <input type="text" id="disease" name="disease" required>
+
+            <label for="diagnosis">Diagnosis:</label>
+            <input type="text" id="diagnosis" name="diagnosis" required>
+
+            <label for="treatment">Treatment:</label>
+            <input type="text" id="treatment" name="treatment" required>
+        </section>
+
+        <section id="claimDetails" class="form-section">
+            <h2>Claim Details</h2>
+            <label for="policyNumber">Policy Number:</label>
+            <input type="text" id="policyNumber" name="clam" required>
+
+            <label for="claimDescription">Claim Description:</label>
+            <textarea id="claimDescription" name="claimDescription" rows="4" required></textarea>
+
+            <label for="billAmount">Claim Amount:</label>
+            <input type="number" id="billAmount" name="claimAmountRequested" required>
+        </section>
+        
+        
+        <input type="text" id="policyIdId" name="clamIplcId" required>
+    <input type="button" id="myButton" value="Get Members">
+	
+	
+	<label for="members">Members:</label>
+    <select id="members" name="members">
+    
+    </select>
+        
+
+        <section id="documentUpload" class="form-section">
+            <h2>Upload Documents</h2>
+            <div id="documentFields">
+                <!-- Dynamic document rows will be added here -->
+            </div>
+            <button type="button" id="addDocumentButton">Add Document</button>
+        </section>
+        <div align="center">
+            <button type="submit">Submit Claim</button>
+        </div>
+    </form>
+</main>
+
+<footer>
+    &copy; 2023 Future Safe
+</footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const documentFields = document.getElementById("documentFields");
+        const addDocumentButton = document.getElementById("addDocumentButton");
+
+        addDocumentButton.addEventListener("click", function () {
+            const documentRow = createDocumentRow();
+            documentFields.appendChild(documentRow);
+        });
+
+        function createDocumentRow() {
+            const documentRow = document.createElement("div");
+            documentRow.classList.add("document-row");
+
+            const documentNameInput = document.createElement("input");
+            documentNameInput.type = "text";
+            documentNameInput.name = "documentTitle";
+            documentNameInput.placeholder = "Document Name";
+            documentNameInput.required = true;
+
+            const documentAmountInput = document.createElement("input");
+            documentAmountInput.type = "number";
+            documentAmountInput.name = "claimAmount[]";
+            documentAmountInput.placeholder = "Amount";
+            documentAmountInput.required = true;
+
+            const documentFileInput = document.createElement("input");
+            documentFileInput.type = "file";
+            documentFileInput.name = "file[]";
+            documentFileInput.accept = ".pdf, .jpg, .png";
+            documentFileInput.required = true;
+
+            const removeDocumentButton = document.createElement("button");
+            removeDocumentButton.type = "button";
+            removeDocumentButton.classList.add("remove-document-button");
+            removeDocumentButton.textContent = "Remove";
+            removeDocumentButton.addEventListener("click", function () {
+                documentFields.removeChild(documentRow);
+            });
+
+            documentRow.appendChild(documentNameInput);
+            documentRow.appendChild(documentAmountInput);
+            documentRow.appendChild(documentFileInput);
+            documentRow.appendChild(removeDocumentButton);
+
+            return documentRow;
+        }
+    });
+    
+    
+    document.getElementById("myButton").addEventListener("click", function () {
+    	  
+        event.preventDefault();
+        const id = document.getElementById("policyIdId").value;
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "/getFamilyMembers?policy="+id, true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+            	var mem=document.getElementById("members");
+                const response = JSON.parse(xhr.responseText);
+                mem.innerHTML = "";
+                if (Array.isArray(response) && response.length > 0) {
+                    mem.innerHTML = "";
+                    for (let i = 0; i < response.length; i++) {
+                        const option = document.createElement("option");
+                        option.text = response[i];
+                        option.value = response[i];
+                        mem.appendChild(option);
+                    }
+                } else {
+                    window.alert("You are unable to apply for this claim.");
+                }
+            } 
+        };
+
+        xhr.send();
+    
+});
+</script>
+</body>
+</html>

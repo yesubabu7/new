@@ -61,10 +61,16 @@ public class InsurenceController {
 
 	@PostMapping("/saveCustomerData")
 	@ResponseBody
-	public String saveCustomerData(@RequestBody CustomerData customerData) {
+	public String saveCustomerData(@RequestBody CustomerData customerData,Model model) {
 		customerData.setCust_user_id(2);
 		// replace withint userId= (int)sessionGetAttribute("userId");
 		System.out.println("Received customer_userId: " + customerData.getCust_user_id());
+		
+		int userId= (int)session.getAttribute("userId");
+		int customerId=insurenceRepository.getCustIdByUserId(userId);
+		
+		model.addAttribute("customerId",customerId);
+		model.addAttribute("userId",userId);
 
 		customerData.setCust_status("Active");
 		customerData.setCust_luudate(new Date());

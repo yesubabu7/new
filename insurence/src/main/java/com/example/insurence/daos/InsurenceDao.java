@@ -174,4 +174,11 @@ public class InsurenceDao implements DaoInterface {
 				new PolicyMembersRowMapper());
 	}
 
+	public int  getCustIdByUserId(int userId) {
+		String sql = "SELECT custId FROM Customer WHERE userId = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{userId}, Integer.class);
+   
+		
+	}
+
 }

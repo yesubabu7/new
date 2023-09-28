@@ -234,4 +234,9 @@ public class InsurenceRepository implements RepositoryInterface {
 		return names;
 	}
 
+	public int getCustIdByUserId(int userId) {
+		return insurenceDao.getCustIdByUserId(userId);
+		
+	}
+
 }

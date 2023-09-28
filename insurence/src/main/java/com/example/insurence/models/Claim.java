@@ -11,11 +11,9 @@ public class Claim {
 	private int clamIplcId;
 	private double clamProcessedAmount;
 	private Date clamProcessedDate;
-
 	private int clamProcessedBy;
 	private String clamRemarks;
 	private String clamStatus;
-	private String hosp_name;
 
 	// Default constructor
 	public Claim() {
@@ -24,7 +22,7 @@ public class Claim {
 	// Parameterized constructor
 	public Claim(int clamId, String clamSource, String clamType, Date clamDate, double clamAmountRequested,
 			int clamIplcId, double clamProcessedAmount, Date clamProcessedDate, int clamProcessedBy, String clamRemarks,
-			String clamStatus, String hosp_name) {
+			String clamStatus) {
 		this.clamId = clamId;
 		this.clamSource = clamSource;
 		this.clamType = clamType;
@@ -36,7 +34,6 @@ public class Claim {
 		this.clamProcessedBy = clamProcessedBy;
 		this.clamRemarks = clamRemarks;
 		this.clamStatus = clamStatus;
-
 	}
 
 	// Getter for clamId
