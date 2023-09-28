@@ -4,31 +4,23 @@
     <title>Required uploads</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
     <link rel="stylesheet" href="/path/to/your/custom.css">
 </head>
 <body>
     <div class="container mt-5">
         <form th:object="${reupload}" action="/adduploads" enctype="multipart/form-data" method="post" class="needs-validation" novalidate>
+
             <div class="row">
                 <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input id="name" th:field="*{name}" type="text" class="form-control" />
-                        <p class="text-muted">Enter your name</p>
-                    </div>
-                    <div class="form-group">
-                        <label for="type">Type</label>
-                        <input id="type" th:field="*{type}" type="text" class="form-control" />
-                        <p class="text-muted">Enter the type</p>
-                    </div>
-                    <div class="form-group">
-                        <label for="Status">Status</label>
-                        <input id="Status" th:field="*{Status}" type="text" class="form-control" />
-                        <p class="text-muted">Enter the status</p>
+                    <div th:each="field : ${reupload}" class="form-group">
+                        <label th:text="${field.name}"></label>
+                        <input th:name="${field.name}" th:type="${field.type}" class="form-control" />
+                        <p th:text="${field.description}" class="text-muted"></p>
                     </div>
                 </div>
             </div>
-            <input type="hidden" id="claimid" th:field="*{claimId}" />
+            <input type="hidden" name="claimid" th:value="${claimid}">
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
